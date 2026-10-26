@@ -1,4 +1,4 @@
-import { browser, $, $$, expect } from '@wdio/globals';
+import { browser, $, expect } from '@wdio/globals';
 import { randomUUID } from 'node:crypto';
 const password='DemoPass42!'; let username:string;
 async function home() { await browser.url((process.env.PARABANK_URL || 'https://parabank.parasoft.com/parabank')+'/index.htm'); }
@@ -17,5 +17,5 @@ describe('ParaBank customer journeys',()=> {
   it('required fields',async()=> { await home(); await $('a=Register').click(); await submit(); await expect($('[id="customer.firstName.errors"]')).toHaveText('First name is required.'); });
   it('password mismatch',async()=> { await form(true); await submit(); await expect($('[id="repeatedPassword.errors"]')).toHaveText('Passwords did not match.'); });
   it('unknown credentials',async()=> { await home(); await login(); await expect($('#rightPanel .error')).toHaveText('The username and password could not be verified.'); });
-  it('open a savings account',async()=> { await register(); await $('a=Open New Account').click(); await browser.waitUntil(async()=> (await $$('#fromAccountId option')).length>0); await $('#type').selectByAttribute('value','1'); await $('#openAccountForm input.button').click(); await expect($('#newAccountId')).toHaveText(/^[0-9]+$/); const id=await $('#newAccountId').getText(); await $('#newAccountId').click(); await expect($('#accountId')).toHaveText(id); await expect($('#accountType')).toHaveText('SAVINGS'); });
+  it('open a savings account',async()=> { await register(); await $('a=Open New Account').click(); await $('#fromAccountId option').waitForExist(); await $('#type').selectByAttribute('value','1'); await $('#openAccountForm input.button').click(); await expect($('#newAccountId')).toHaveText(/^[0-9]+$/); const id=await $('#newAccountId').getText(); await $('#newAccountId').click(); await expect($('#accountId')).toHaveText(id); await expect($('#accountType')).toHaveText('SAVINGS'); });
 });
